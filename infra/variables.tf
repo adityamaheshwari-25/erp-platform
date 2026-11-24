@@ -16,6 +16,12 @@ variable "environment" {
   default     = "dev"
 }
 
+variable "system_node_instance_type" {
+  description = "x86-64 EC2 instance type allowed by the AWS account for the EKS system node group"
+  type        = string
+  default     = "t3.small"
+}
+
 variable "db_username" {
   description = "Database master username"
   type        = string

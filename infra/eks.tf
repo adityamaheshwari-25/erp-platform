@@ -38,9 +38,8 @@ module "eks" {
   eks_managed_node_groups = {
     system = {
       # Selects the EKS-optimized Amazon Linux 2023 image for x86-64 workers.
-      ami_type = "AL2023_x86_64_STANDARD"
-      # Uses burstable EC2 instances that spend CPU credits when they exceed their baseline CPU performance.
-      instance_types = ["t3.medium"]
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = [var.system_node_instance_type]
       # Sets the lower and upper bounds for the node group's Auto Scaling group.
       min_size = 2
       max_size = 3

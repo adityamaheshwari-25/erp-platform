@@ -8,6 +8,9 @@ module "karpenter" {
   # The module creates the association by default so the controller's service account can get temporary AWS credentials.
   cluster_name = module.eks.cluster_name
 
+  # The controller policy exceeds the 6,144-character limit for a managed IAM policy.
+  enable_inline_policy = true
+
   node_iam_role_additional_policies = {
     # Grants the node's SSM Agent permissions to register and use Systems Manager features such as Session Manager.
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
