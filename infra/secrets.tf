@@ -10,8 +10,8 @@ resource "aws_secretsmanager_secret" "erp_db" {
 resource "aws_secretsmanager_secret_version" "erp_db" {
   secret_id = aws_secretsmanager_secret.erp_db.id
   secret_string = jsonencode({
-    host     = aws_db_instance.erp.endpoint
-    port     = 5432
+    host     = aws_db_instance.erp.address
+    port     = aws_db_instance.erp.port
     username = var.db_username
     password = var.db_password
     dbname   = "erpdb"
