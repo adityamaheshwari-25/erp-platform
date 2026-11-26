@@ -6,15 +6,14 @@ spec:
   template:
     spec:
       requirements:
+        # The lab's AWS organization policy denies Spot launches.
         - key: karpenter.sh/capacity-type
           operator: In
-          values: ["on-demand", "spot"]
-        - key: karpenter.k8s.aws/instance-category
+          values: ["on-demand"]
+        # Use the x86-64 instance type already running in the EKS system node group.
+        - key: node.kubernetes.io/instance-type
           operator: In
-          values: ["c", "m", "r"]
-        - key: karpenter.k8s.aws/instance-size
-          operator: In
-          values: ["medium", "large", "xlarge"]
+          values: ["t3.small"]
       nodeClassRef:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
