@@ -42,6 +42,30 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+    if (req.url === "/seed") {
+    try {
+      const client = new Client(dbConfig);
+      await client.connect();
+      // Randomized item data
+      const names = ["Sensor F", "Module G", "Relay H", "Actuator I", "Connector J"];
+      const warehouses = ["WH-01", "WH-02", "WH-03"];
+      const name = names[Math.floor(Math.random() * names.length)];
+      const quantity = Math.floor(Math.random() * 500) + 10;
+      const warehouse = warehouses[Math.floor(Math.random() * warehouses.length)];
+      await client.query(
+        "INSERT INTO inventory (name, quantity, warehouse) VALUES ($1, $2, $3)",
+        [name, quantity, warehouse]
+      );
+      await client.end();
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "Seeded", name, quantity, warehouse }));
+    } catch (err) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Seed failed", details: err.message }));
+    }
+    return;
+  }
+
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ error: "Not found" }));
 });
