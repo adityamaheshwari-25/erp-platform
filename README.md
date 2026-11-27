@@ -1,6 +1,21 @@
 # ERP Platform on AWS EKS
 
-A sample ERP backend with two Node.js services on Amazon EKS, a private PostgreSQL database on Amazon RDS, and Karpenter for node scaling. The Order Service builds sample orders from the Inventory Service API. The Inventory Service reads and seeds inventory records in PostgreSQL.
+A hands-on AWS deployment of a sample ERP backend. The Order Service calls the Inventory Service over Kubernetes service discovery and uses stock records from a private PostgreSQL database to build sample orders.
+
+## What I implemented
+
+- **Infrastructure as code.** Provisioned an Amazon EKS 1.35 cluster, a VPC spanning two Availability Zones, and Amazon RDS for PostgreSQL 16 with Terraform. Placed worker nodes and the database in private subnets and allowed PostgreSQL traffic from the EKS node security group.
+- **Container delivery and Kubernetes workloads.** Containerized the two Node.js services for Amazon ECR and defined their EKS Deployments with two replicas each, CPU and memory requests, readiness and liveness probes, and internal ClusterIP Services.
+- **Workload identity and database credentials.** Configured EKS Pod Identity for External Secrets Operator and limited its IAM permissions to the database secret in AWS Secrets Manager. The operator syncs the credentials into a Kubernetes Secret that the Inventory Service consumes.
+- **Database and scheduled automation.** Wrote the PostgreSQL schema and sample data, implemented the inventory read and seed endpoints, and scheduled a Kubernetes CronJob to add a randomized inventory record every hour.
+- **Node autoscaling.** Configured Karpenter to discover the cluster's private subnets and node security group by tag. Built a repeatable demo that requests five vCPUs across ten Pods so a reviewer can observe provisioning when capacity is full and consolidation when the load is removed.
+
+## Problems I solved in the lab
+
+- **AWS region permissions.** Traced a Terraform plan failure to an AWS Organizations policy that denied the Availability Zone lookup in `us-east-1`. Verified the plan and provisioned the stack in Sydney (`ap-southeast-2`).
+- **Karpenter compatibility and launch permissions.** Migrated the controller's authentication to EKS Pod Identity after the Terraform EKS v21 submodule removed its IRSA inputs. Configured the NodePool for On-Demand `t3.small` instances to match the lab's launch permissions.
+
+## Architecture
 
 ```mermaid
 flowchart LR
